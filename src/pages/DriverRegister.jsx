@@ -17,7 +17,7 @@ function DriverRegister() {
     setError('')
     try {
       // Register user as driver
-      const res = await fetch('http://localhost:5000/api/auth/register', {
+      const res = await fetch('https://taxigo-server.onrender.com/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -31,7 +31,7 @@ function DriverRegister() {
       const data = await res.json()
       if (data.token) {
         // Also create driver profile
-        await fetch('http://localhost:5000/api/drivers', {
+        await fetch('https://taxigo-server.onrender.com/api/drivers', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${data.token}` },
           body: JSON.stringify({
