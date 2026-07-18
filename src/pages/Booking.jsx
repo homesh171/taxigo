@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import { api } from '../api'
+import AddressInput from '../components/AddressInput'
 
 const vehicles = [
   { id: 1, name: 'Saloon', desc: 'Up to 4 passengers', price: 25, eg: 'Toyota Prius, VW Passat' },
@@ -68,17 +69,25 @@ function Booking() {
         {step === 1 && (
           <div className="space-y-5">
             <h2 className="text-2xl font-bold mb-6">Journey Details</h2>
-            {[
-              { label: 'Pickup Location', name: 'pickup', placeholder: 'e.g. Heathrow Terminal 5' },
-              { label: 'Drop-off Location', name: 'dropoff', placeholder: 'e.g. Central London Hotel' },
-            ].map(field => (
-              <div key={field.name}>
-                <label className="text-gray-400 text-xs uppercase tracking-wider mb-2 block">{field.label}</label>
-                <input type="text" name={field.name} value={form[field.name]} onChange={handleChange}
-                  placeholder={field.placeholder}
-                  className="w-full bg-gray-900 border border-gray-700 focus:border-yellow-500 rounded-xl px-4 py-3 text-white text-sm outline-none transition" />
-              </div>
-            ))}
+            <div>
+  <label className="text-gray-400 text-xs uppercase tracking-wider mb-2 block">Pickup Location</label>
+  <AddressInput
+    name="pickup"
+    value={form.pickup}
+    onChange={(name, value) => setForm({ ...form, [name]: value })}
+    placeholder="e.g. Heathrow Terminal 5, London"
+  />
+</div>
+
+<div>
+  <label className="text-gray-400 text-xs uppercase tracking-wider mb-2 block">Drop-off Location</label>
+  <AddressInput
+    name="dropoff"
+    value={form.dropoff}
+    onChange={(name, value) => setForm({ ...form, [name]: value })}
+    placeholder="e.g. Central London Hotel"
+  />
+</div>
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="text-gray-400 text-xs uppercase tracking-wider mb-2 block">Date</label>
