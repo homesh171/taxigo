@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import { api } from '../api'
 import AddressInput from '../components/AddressInput'
@@ -12,15 +12,10 @@ const vehicles = [
 ]
 
 function Booking() {
-  const [searchParams] = useSearchParams()
   const [step, setStep] = useState(1)
   const [form, setForm] = useState({
-    pickup: searchParams.get('pickup') || '',
-    dropoff: searchParams.get('dropoff') || '',
-    date: searchParams.get('date') || '',
-    time: searchParams.get('time') || '',
-    passengers: searchParams.get('passengers') || 1,
-    flight: '',
+    pickup: '', dropoff: '', date: '', time: '',
+    passengers: 1, flight: '', name: '', email: '', phone: '',
     vehicle: null
   })
   const [loading, setLoading] = useState(false)
@@ -75,23 +70,24 @@ function Booking() {
           <div className="space-y-5">
             <h2 className="text-2xl font-bold mb-6">Journey Details</h2>
             <div>
-              <label className="text-gray-400 text-xs uppercase tracking-wider mb-2 block">Pickup Location</label>
-              <AddressInput
-                name="pickup"
-                value={form.pickup}
-                onChange={(name, value) => setForm({ ...form, [name]: value })}
-                placeholder="e.g. Heathrow Terminal 5, London"
-              />
-            </div>
-            <div>
-              <label className="text-gray-400 text-xs uppercase tracking-wider mb-2 block">Drop-off Location</label>
-              <AddressInput
-                name="dropoff"
-                value={form.dropoff}
-                onChange={(name, value) => setForm({ ...form, [name]: value })}
-                placeholder="e.g. Central London Hotel"
-              />
-            </div>
+  <label className="text-gray-400 text-xs uppercase tracking-wider mb-2 block">Pickup Location</label>
+  <AddressInput
+    name="pickup"
+    value={form.pickup}
+    onChange={(name, value) => setForm({ ...form, [name]: value })}
+    placeholder="e.g. Heathrow Terminal 5, London"
+  />
+</div>
+
+<div>
+  <label className="text-gray-400 text-xs uppercase tracking-wider mb-2 block">Drop-off Location</label>
+  <AddressInput
+    name="dropoff"
+    value={form.dropoff}
+    onChange={(name, value) => setForm({ ...form, [name]: value })}
+    placeholder="e.g. Central London Hotel"
+  />
+</div>
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="text-gray-400 text-xs uppercase tracking-wider mb-2 block">Date</label>
@@ -160,6 +156,8 @@ function Booking() {
         {step === 3 && (
           <div className="space-y-5">
             <h2 className="text-2xl font-bold mb-6">Confirm & Pay</h2>
+
+            {/* Summary */}
             <div className="bg-gray-900 border border-gray-700 rounded-xl p-5">
               <h4 className="font-bold mb-4 text-yellow-500">Booking Summary</h4>
               <div className="space-y-3 text-sm text-gray-400">
