@@ -29,6 +29,10 @@ function Navbar() {
         </div>
 
         {/* Buttons */}
+        <Link to="/manage-booking" className="text-gray-300 hover:text-yellow-500 text-sm font-medium transition">
+            Manage Booking
+          </Link>
+        
         <div className="hidden md:flex items-center gap-3">
           <Link to="/login" className="text-gray-300 hover:text-yellow-500 text-sm font-medium transition">
             Login

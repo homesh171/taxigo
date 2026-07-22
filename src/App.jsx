@@ -15,6 +15,7 @@ import AdminDashboard from './pages/AdminDashboard'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import DriverRegister from './pages/DriverRegister'
+import ManageBooking from './pages/ManageBooking'
 
 
 function Home() {
@@ -45,6 +46,7 @@ function App() {
         <Route path="/driver/register" element={<DriverRegister />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/manage-booking" element={<ManageBooking />} />
       </Routes>
     </BrowserRouter>
   )

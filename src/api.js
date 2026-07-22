@@ -1,7 +1,6 @@
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
 
 export const api = {
-  // Auth
   register: async (data) => {
     const res = await fetch(`${BASE_URL}/auth/register`, {
       method: 'POST',
@@ -20,12 +19,29 @@ export const api = {
     return res.json()
   },
 
-  // Bookings
   createBooking: async (data, token) => {
     const res = await fetch(`${BASE_URL}/bookings`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
       body: JSON.stringify(data)
+    })
+    return res.json()
+  },
+
+  createGuestBooking: async (data) => {
+    const res = await fetch(`${BASE_URL}/bookings/guest`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    })
+    return res.json()
+  },
+
+  findBooking: async (bookingReference, email) => {
+    const res = await fetch(`${BASE_URL}/bookings/find`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ bookingReference, email })
     })
     return res.json()
   },
@@ -69,7 +85,6 @@ export const api = {
     return res.json()
   },
 
-  // Drivers
   getDrivers: async (token) => {
     const res = await fetch(`${BASE_URL}/drivers`, {
       headers: { 'Authorization': `Bearer ${token}` }
