@@ -39,11 +39,14 @@ function Booking() {
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value })
 
   const handleSubmit = async () => {
-    setLoading(true)
-    setError('')
+  setLoading(true)
+  setError('')
+
+  try {
+    let data
 
     if (isLoggedIn) {
-      const data = await api.createBooking({
+      data = await api.createBooking({
         pickup: form.pickup,
         dropoff: form.dropoff,
         date: form.date,
@@ -53,13 +56,8 @@ function Booking() {
         vehicle: form.vehicle.name,
         price: form.vehicle.price,
       }, token)
-      if (data._id) {
-        setConfirmed(data)
-      } else {
-        setError(data.message || 'Booking failed!')
-      }
     } else {
-      const data = await api.createGuestBooking({
+      data = await api.createGuestBooking({
         pickup: form.pickup,
         dropoff: form.dropoff,
         date: form.date,
@@ -72,14 +70,22 @@ function Booking() {
         guestEmail: form.guestEmail,
         guestPhone: form.guestPhone,
       })
-      if (data._id) {
-        setConfirmed(data)
-      } else {
-        setError(data.message || 'Booking failed!')
-      }
     }
-    setLoading(false)
+
+    console.log('Booking response:', data)
+
+    if (data._id) {
+      setConfirmed(data)
+    } else {
+      setError(data.message || 'Booking failed!')
+    }
+  } catch (err) {
+    setError('Something went wrong!')
+    console.log('Booking error:', err)
   }
+
+  setLoading(false)
+}
 
   // Show booking confirmed page
   if (confirmed) {
