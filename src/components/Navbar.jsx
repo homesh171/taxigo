@@ -1,14 +1,35 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Menu, X, Car } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 function Navbar() {
   const [open, setOpen] = useState(false)
+  const [user, setUser] = useState(null)
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    const u = localStorage.getItem('user')
+    if (u) setUser(JSON.parse(u))
+  }, [])
+
+  const logout = () => {
+    localStorage.clear()
+    setUser(null)
+    navigate('/')
+  }
+
+  const links = [
+    { href: '#home', label: 'Home' },
+    { href: '#services', label: 'Services' },
+    { href: '#about', label: 'About' },
+    { href: '#contact', label: 'Contact' },
+    { href: '/manage-booking', label: 'Manage Booking' },
+  ]
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-black bg-opacity-90 backdrop-blur-md border-b border-yellow-500 border-opacity-30">
-      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-        
+    <nav className="fixed inset-x-0 top-0 z-50 transition-all duration-500 bg-black bg-opacity-90 backdrop-blur-md border-b border-yellow-500 border-opacity-30">
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 md:px-10">
+
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2">
           <div className="bg-yellow-500 p-2 rounded-lg">
@@ -21,23 +42,35 @@ function Navbar() {
 
         {/* Desktop Links */}
         <div className="hidden md:flex items-center gap-8">
-          {['Home', 'Services', 'About', 'Contact'].map(item => (
-            <a key={item} href="#" className="text-gray-300 hover:text-yellow-500 transition text-sm font-medium">
-              {item}
+          {links.map(l => (
+            <a key={l.href} href={l.href}
+              className="text-gray-300 hover:text-yellow-500 transition text-sm font-medium">
+              {l.label}
             </a>
           ))}
         </div>
 
-        {/* Buttons */}
-        <Link to="/manage-booking" className="text-gray-300 hover:text-yellow-500 text-sm font-medium transition">
-            Manage Booking
-          </Link>
-        
+        {/* Desktop Buttons */}
         <div className="hidden md:flex items-center gap-3">
-          <Link to="/login" className="text-gray-300 hover:text-yellow-500 text-sm font-medium transition">
-            Login
-          </Link>
-          <Link to="/booking" className="bg-yellow-500 hover:bg-yellow-400 text-black font-bold px-5 py-2 rounded-full text-sm transition">
+          {user ? (
+            <>
+              <Link to={user.role === 'admin' ? '/admin' : user.role === 'driver' ? '/driver' : '/dashboard'}
+                className="text-gray-300 hover:text-yellow-500 text-sm font-medium transition">
+                My Account
+              </Link>
+              <button onClick={logout}
+                className="border border-gray-700 hover:border-red-500 text-gray-300 hover:text-red-400 font-medium px-4 py-2 rounded-full text-sm transition">
+                Logout
+              </button>
+            </>
+          ) : (
+            <Link to="/login"
+              className="text-gray-300 hover:text-yellow-500 text-sm font-medium transition">
+              Login
+            </Link>
+          )}
+          <Link to="/booking"
+            className="bg-yellow-500 hover:bg-yellow-400 text-black font-bold px-5 py-2 rounded-full text-sm transition">
             Book Now
           </Link>
         </div>
@@ -51,12 +84,22 @@ function Navbar() {
       {/* Mobile Menu */}
       {open && (
         <div className="md:hidden bg-black border-t border-yellow-500 border-opacity-20 px-6 py-4 space-y-4">
-          {['Home', 'Services', 'About', 'Contact'].map(item => (
-            <a key={item} href="#" className="block border rounded-2xl bg-gray-900 border-gray-700  text-center py-3 text-gray-300 hover:text-yellow-500 transition text-sm">
-              {item}
+          {links.map(l => (
+            <a key={l.href} href={l.href}
+              className="block text-gray-300 hover:text-yellow-500 transition text-sm">
+              {l.label}
             </a>
           ))}
-          <Link to="/booking" className="block bg-yellow-500 text-black font-bold px-5 py-2 rounded-full text-sm text-center">
+          {user ? (
+            <>
+              <Link to="/dashboard" className="block text-gray-300 hover:text-yellow-500 text-sm">My Account</Link>
+              <button onClick={logout} className="block text-red-400 text-sm">Logout</button>
+            </>
+          ) : (
+            <Link to="/login" className="block text-gray-300 hover:text-yellow-500 text-sm">Login</Link>
+          )}
+          <Link to="/booking"
+            className="block bg-yellow-500 text-black font-bold px-5 py-2 rounded-full text-sm text-center">
             Book Now
           </Link>
         </div>

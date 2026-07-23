@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { Car, Eye, EyeOff } from 'lucide-react'
 import { api } from '../api'
 
@@ -9,6 +9,8 @@ function Login() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
+
+  const [searchParams] = useSearchParams()
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value })
 
@@ -21,11 +23,18 @@ function Login() {
     localStorage.setItem('token', data.token)
     localStorage.setItem('user', JSON.stringify(data.user))
     
-    // Use ACTUAL role from database, not the selected button
-    if (data.user.role === 'customer') navigate('/dashboard')
-    else if (data.user.role === 'driver') navigate('/driver')
+    // Check if there's a pending booking
+    const pendingBooking = localStorage.getItem('pendingBooking')
+    const redirectParam = new URLSearchParams(window.location.search).get('redirect')
+    
+    if (data.user.role === 'customer') {
+      if (pendingBooking && redirectParam === '/booking') {
+        navigate('/booking')
+      } else {
+        navigate('/dashboard')
+      }
+    } else if (data.user.role === 'driver') navigate('/driver')
     else if (data.user.role === 'admin') navigate('/admin')
-    else navigate('/dashboard')
   } else {
     setError(data.message || 'Login failed')
   }

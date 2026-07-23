@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams, Link } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import { api } from '../api'
@@ -35,6 +35,18 @@ function Booking() {
   const token = localStorage.getItem('token')
   const user = JSON.parse(localStorage.getItem('user') || 'null')
   const isLoggedIn = !!token && !!user
+
+  // Add this useEffect at the top of the Booking component
+useEffect(() => {
+  const pending = localStorage.getItem('pendingBooking')
+  if (pending && isLoggedIn) {
+    const saved = JSON.parse(pending)
+    setForm(prev => ({ ...prev, ...saved }))
+    // Go straight to step 3 since details already filled
+    setStep(3)
+    localStorage.removeItem('pendingBooking')
+  }
+}, [isLoggedIn])
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value })
 
@@ -252,12 +264,24 @@ function Booking() {
                     <h3 className="font-bold text-white mb-1">Continue as Guest</h3>
                     <p className="text-gray-400 text-xs">No account needed. Get a booking reference by email.</p>
                   </button>
-                  <button onClick={() => navigate('/login')}
-                    className="border border-gray-700 hover:border-yellow-500 rounded-xl p-5 text-left transition group">
-                    <div className="text-2xl mb-3">🔐</div>
-                    <h3 className="font-bold text-white mb-1">Login / Register</h3>
-                    <p className="text-gray-400 text-xs">Sign in to save bookings to your account.</p>
-                  </button>
+                  <button onClick={() => {
+                  // Save booking data before redirecting to login
+                  localStorage.setItem('pendingBooking', JSON.stringify({
+                    pickup: form.pickup,
+                    dropoff: form.dropoff,
+                    date: form.date,
+                    time: form.time,
+                    passengers: form.passengers,
+                    flight: form.flight,
+                    vehicle: form.vehicle,
+                  }))
+                  navigate('/login?redirect=/booking')
+                }}
+                  className="border border-gray-700 hover:border-yellow-500 rounded-xl p-5 text-left transition group">
+                  <div className="text-2xl mb-3">🔐</div>
+                  <h3 className="font-bold text-white mb-1">Login / Register</h3>
+                  <p className="text-gray-400 text-xs">Sign in to save bookings to your account.</p>
+                </button>
                 </div>
               </div>
             )}
