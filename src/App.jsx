@@ -16,7 +16,7 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import DriverRegister from './pages/DriverRegister'
 import ManageBooking from './pages/ManageBooking'
-
+import ProtectedRoute from './components/ProtectedRoute'
 
 function Home() {
   return (
@@ -40,9 +40,21 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/booking" element={<Booking />} />
-        <Route path="/dashboard" element={<CustomerDashboard />} />
-        <Route path="/driver" element={<DriverDashboard />} />
-        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/dashboard" element={
+          <ProtectedRoute allowedRole="customer">
+            <CustomerDashboard />
+          </ProtectedRoute>
+        } />
+        <Route path="/driver" element={
+          <ProtectedRoute allowedRole="driver">
+            <DriverDashboard />
+          </ProtectedRoute>
+        } />
+        <Route path="/admin" element={
+          <ProtectedRoute allowedRole="admin">
+            <AdminDashboard />
+          </ProtectedRoute>
+        } />
         <Route path="/driver/register" element={<DriverRegister />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />

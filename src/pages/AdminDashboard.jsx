@@ -31,15 +31,19 @@ function AdminDashboard() {
   }, [])
 
   const fetchData = async () => {
-    setLoading(true)
-    const [bookingsData, driversData] = await Promise.all([
-      api.getAllBookings(token),
-      api.getDrivers(token)
-    ])
-    setBookings(Array.isArray(bookingsData) ? bookingsData : [])
-    setDrivers(Array.isArray(driversData) ? driversData : [])
-    setLoading(false)
-  }
+  setLoading(true)
+  const [bookingsData, driversData] = await Promise.all([
+    api.getAllBookings(token),
+    api.getDrivers(token)
+  ])
+  // Sort newest first
+  const sorted = Array.isArray(bookingsData) 
+    ? bookingsData.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) 
+    : []
+  setBookings(sorted)
+  setDrivers(Array.isArray(driversData) ? driversData : [])
+  setLoading(false)
+}
 
   const assignDriver = async (bookingId, driverId) => {
     await api.assignDriver(bookingId, driverId, token)
@@ -168,38 +172,46 @@ function AdminDashboard() {
             ) : (
               <div className="space-y-4">
                 {bookings.map(b => (
-                  <div key={b._id} className="border border-gray-800 rounded-xl p-4">
-                    <div className="flex justify-between items-start mb-3">
-                      <div>
-                        <p className="text-yellow-500 font-bold text-xs">#{b._id.slice(-6).toUpperCase()}</p>
-                        <p className="text-white font-semibold text-sm">{b.customer?.name}</p>
-                        <p className="text-gray-400 text-xs">{b.pickup} → {b.dropoff}</p>
-                        <p className="text-gray-500 text-xs mt-1">📅 {b.date} 🕐 {b.time} 🚗 {b.vehicle}</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-yellow-500 font-bold">£{b.price}</p>
-                        <span className={`text-xs border px-2 py-0.5 rounded-full ${statusColors[b.status]}`}>
-                          {b.status}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="flex flex-wrap items-center gap-3 mt-3 pt-3 border-t border-gray-800">
-                      <span className="text-gray-400 text-xs">
-                        Driver: <span className="text-white">{b.driver?.name || 'Unassigned'}</span>
-                      </span>
-                      {!b.driver && drivers.length > 0 && (
-                        <select onChange={(e) => assignDriver(b._id, e.target.value)}
-                          className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-1.5 text-white text-xs outline-none"
-                          defaultValue="">
-                          <option value="" disabled>Assign Driver</option>
-                          {drivers.map(d => (
-                            <option key={d._id} value={d.user?._id}>{d.user?.name}</option>
-                          ))}
-                        </select>
-                      )}
-                    </div>
-                  </div>
-                ))}
+  <div key={b._id} className="border border-gray-800 rounded-xl p-4">
+    <div className="flex justify-between items-start mb-3">
+      <div>
+        <p className="text-yellow-500 font-bold text-xs">#{b.bookingReference || b._id.slice(-6).toUpperCase()}</p>
+        <p className="text-white font-semibold text-sm">
+          {b.isGuest ? `${b.guestName} (Guest)` : b.customer?.name}
+        </p>
+        <p className="text-gray-400 text-xs">
+          {b.isGuest ? b.guestEmail : b.customer?.email}
+        </p>
+        <p className="text-gray-400 text-xs">{b.pickup} → {b.dropoff}</p>
+        <p className="text-gray-500 text-xs mt-1">📅 {b.date} 🕐 {b.time} 🚗 {b.vehicle}</p>
+      </div>
+      <div className="text-right">
+        <p className="text-yellow-500 font-bold">£{b.price}</p>
+        <span className={`text-xs border px-2 py-0.5 rounded-full ${statusColors[b.status]}`}>
+          {b.status}
+        </span>
+        {b.isGuest && (
+          <p className="text-gray-500 text-xs mt-1">Guest</p>
+        )}
+      </div>
+    </div>
+    <div className="flex flex-wrap items-center gap-3 mt-3 pt-3 border-t border-gray-800">
+      <span className="text-gray-400 text-xs">
+        Driver: <span className="text-white">{b.driver?.name || 'Unassigned'}</span>
+      </span>
+      {!b.driver && drivers.length > 0 && (
+        <select onChange={(e) => assignDriver(b._id, e.target.value)}
+          className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-1.5 text-white text-xs outline-none"
+          defaultValue="">
+          <option value="" disabled>Assign Driver</option>
+          {drivers.map(d => (
+            <option key={d._id} value={d.user?._id}>{d.user?.name}</option>
+          ))}
+        </select>
+      )}
+    </div>
+  </div>
+))}
               </div>
             )}
           </div>
